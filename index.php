@@ -9,8 +9,17 @@ require_once  'class/Student.php';
     $student = new Student($db);
 
     $dohvati = $student->getStudent($student_id);
+    $board_type_id = $dohvati['board_type_id'];
 
-    var_dump($dohvati);
+    if($board_type_id == '1')
+    {
+        $result = $student->getCSMoardResult($student_id);
+        echo $result;
+    }
+    else
+    {
+        $result = $student->getCSMBoardResult($student_id);
+    }
 ?>
 <!doctype html>
 <html lang="en">
