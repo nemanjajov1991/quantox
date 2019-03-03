@@ -1,28 +1,25 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Puki doktor
- * Date: 3/3/2019
- * Time: 12:25 PM
- */
 
 class Database
 {
-    private $host = 'localhost';
-    private $db_name = 'school_board';
-    private $username = 'root';
-    private $password = '';
+    /**
+     * @var PDO
+     */
     private $conn;
 
-    public function connect() {
-
-        $this->conn = null;
-
-        try {
-            $this->conn = new PDO('mysql:host=' . $this->host . ';dbname=' . $this->db_name, $this->username, $this->password);
+    public function __construct()
+    {
+        try
+        {
+            $this->conn  = new PDO('mysql:host=localhost;port=3306;dbname=school_board',
+                'root',
+                '',
+                array(PDO::ATTR_PERSISTENT => true));
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch(PDOException $e) {
-            echo 'Connection Error: ' . $e->getMessage();
+        }
+        catch(PDOException $e)
+        {
+           die();
         }
 
         return $this->conn;
