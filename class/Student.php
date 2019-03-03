@@ -1,4 +1,5 @@
 <?php
+require __DIR__ . '../../vendor/autoload.php';
 
 class Student
 {
@@ -62,19 +63,37 @@ class Student
     {
         $rows = array();
         $grades = array();
+        $br = 0;
+        $sr = 0;
+        $s = 0;
+        $service = new Sabre\Xml\Service();
+
         $pdo = new PDO('mysql:host=localhost;port=3306;dbname=school_board',
             'root',
             '',
             array(PDO::ATTR_PERSISTENT => true));
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
         $stmt = $pdo->prepare("SELECT s.student_name, g.grade FROM student as s INNER JOIN grade as g ON s.id = g.student_id WHERE s.id=?");
         $stmt->execute([$student_id]);
         while($row = $stmt->fetch(PDO::FETCH_ASSOC))
         {
             array_push($grades, $row['grade']);
-            array_push($rows, $row);
+            $name = $row['student_name'];
+            $s += $row['grade'];
+            $br++;
         }
+        $grade_sort = sort($grades);
+        $number = count($grades);
+        $grade_check =  $number > 1 ? array_shift($grade_sort) : $grades;
+        $result = $grade_check[$number] > 8 ? 'Pass' : 'Fail';
+        $sr = $s / $br;
 
-        return  $grades;
+        echo $service->write('{http://example.org/}root', [
+            '{http://example.org/ns}student_name' => $name,
+            '{http://example.org/ns}grades' => $grades,
+            '{http://example.org/ns}average' => $sr,
+            '{http://example.org/ns}result' => $result,
+        ]);
     }
 }
