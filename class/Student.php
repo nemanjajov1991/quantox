@@ -41,6 +41,7 @@ class Student
         while($row = $stmt->fetch(PDO::FETCH_ASSOC))
         {
             array_push($grades, $row['grade']);
+            $name = $row['student_name'];
             $s += $row['grade'];
             $br++;
         }
@@ -48,7 +49,7 @@ class Student
         $sr = $s / $br;
         $result = $sr >= '7' ? 'Pass' : 'Fail';
         $response = array(
-            'name' =>  $row['student_name'],
+            'name' =>  $name,
             'grades' => $grades,
             'average' => $sr,
             'result' => $result
