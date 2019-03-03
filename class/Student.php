@@ -61,7 +61,6 @@ class Student
 
     public function getCSMBoardResult($student_id)
     {
-        $rows = array();
         $grades = array();
         $br = 0;
         $sr = 0;
@@ -74,7 +73,7 @@ class Student
             array(PDO::ATTR_PERSISTENT => true));
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        $stmt = $pdo->prepare("SELECT s.student_name, g.grade FROM student as s INNER JOIN grade as g ON s.id = g.student_id WHERE s.id=?");
+        $stmt = $pdo->prepare("SELECT s.student_name, g.grade FROM student as s INNER JOIN grade as g ON s.id = g.student_id WHERE s.id=? ORDER BY g.grade");
         $stmt->execute([$student_id]);
         while($row = $stmt->fetch(PDO::FETCH_ASSOC))
         {
@@ -83,13 +82,13 @@ class Student
             $s += $row['grade'];
             $br++;
         }
-        $grade_sort = sort($grades);
-        $number = count($grades);
-        $grade_check =  $number > 1 ? array_shift($grade_sort) : $grades;
-        $result = $grade_check[$number] > 8 ? 'Pass' : 'Fail';
-        $sr = $s / $br;
 
-        echo $service->write('{http://example.org/}root', [
+       $number = count($grades);
+       $grade_check =  $number > 1 ? array_shift($grades) : $grades;
+       $result = end($grades) >= 8 ? 'Pass' : 'Fail';
+       $sr = $s / $br;
+
+        return $service->write('{http://example.org/}CSMB', [
             '{http://example.org/ns}student_name' => $name,
             '{http://example.org/ns}grades' => $grades,
             '{http://example.org/ns}average' => $sr,

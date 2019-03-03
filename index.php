@@ -19,6 +19,7 @@ require_once  'class/Student.php';
     else
     {
         $result = $student->getCSMBoardResult($student_id);
+        echo $result;
     }
 ?>
 <!doctype html>
